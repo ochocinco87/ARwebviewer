@@ -161,6 +161,43 @@ model-viewer {
     to   { opacity: 0; transform: translateX(-50%) translateY(8px); }
 }
 
+/* === Zoom slider === */
+#zoom-control {
+    position: fixed; bottom: 136px; left: 50%; transform: translateX(-50%);
+    z-index: 20;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(10,10,20,0.7);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 8px 14px;
+    max-width: 260px; width: 70vw;
+}
+.zoom-icon { color: #888; flex-shrink: 0; }
+
+#zoom-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px; outline: none;
+}
+#zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
+    border: 2px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(110,95,246,0.4);
+}
+#zoom-slider::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
+    border: 2px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(110,95,246,0.4);
+}
+
 /* === Enter AR button === */
 #enter-ar-btn {
     position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
@@ -193,7 +230,8 @@ model-viewer {
 
 /* === Mobile === */
 @media (max-width: 480px) {
-    #enter-ar-btn { bottom: 72px; padding: 12px 24px; font-size: 0.9rem; }
+    #zoom-control { bottom: 120px; max-width: 220px; }
+    #enter-ar-btn { bottom: 64px; padding: 12px 24px; font-size: 0.9rem; }
     #info-content { width: 200px; right: 12px; }
     #top-bar { padding: 10px 12px; }
 }
@@ -202,6 +240,7 @@ model-viewer {
 @supports (padding-top: env(safe-area-inset-top)) {
     #top-bar { padding-top: calc(12px + env(safe-area-inset-top)); }
     #info-content { top: calc(56px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); }
+    #zoom-control { bottom: calc(136px + env(safe-area-inset-bottom)); }
     #enter-ar-btn { bottom: calc(80px + env(safe-area-inset-bottom)); }
     #bottom-bar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
 }

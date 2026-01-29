@@ -21,6 +21,10 @@
     const toastText    = document.getElementById('toast-text');
     const progressFill = document.getElementById('progress-fill');
 
+    // Zoom control
+    const zoomControl  = document.getElementById('zoom-control');
+    const zoomSlider   = document.getElementById('zoom-slider');
+
     // AR overlay elements
     const arStatusText = document.getElementById('ar-status-text');
     const arPickupBtn  = document.getElementById('ar-pickup-btn');
@@ -67,13 +71,26 @@
             topBar.classList.remove('hidden');
             bottomBar.classList.remove('hidden');
             enterArBtn.classList.remove('hidden');
+            zoomControl.classList.remove('hidden');
         }, 500);
 
-        showToast('Rotate & zoom the model. Tap a part to highlight it.', 5000);
+        showToast('Use the slider to zoom. Drag to rotate. Tap a part to highlight.', 5000);
     });
 
     mv.addEventListener('error', () => {
         loadStatus.textContent = 'Error loading model. Please refresh.';
+    });
+
+    // ════════════════════════════════════════
+    // Zoom slider
+    // Maps slider 1..100 → camera orbit 300%..50%
+    // (higher slider = more zoomed in = closer camera)
+    // ════════════════════════════════════════
+    zoomSlider.addEventListener('input', () => {
+        const val = parseInt(zoomSlider.value, 10);
+        // Linear map: 1→300%, 100→50%
+        const orbitPct = 300 - (val - 1) * (250 / 99);
+        mv.cameraOrbit = `auto auto ${orbitPct.toFixed(1)}%`;
     });
 
     // ════════════════════════════════════════

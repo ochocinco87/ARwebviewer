@@ -144,6 +144,17 @@
         </model-viewer>
     </div>
 
+    <!-- Zoom slider -->
+    <div id="zoom-control" class="hidden">
+        <svg class="zoom-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6"/>
+        </svg>
+        <input type="range" id="zoom-slider" min="1" max="100" value="78" />
+        <svg class="zoom-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6M11 8v6"/>
+        </svg>
+    </div>
+
     <!-- Enter AR button -->
     <button id="enter-ar-btn" class="hidden">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -163,8 +174,9 @@
                 <li><strong>Drag</strong> to move the model</li>
                 <li><strong>Pinch</strong> to resize</li>
                 <li><strong>Two-finger rotate</strong> to turn</li>
+                <li><strong>Close &amp; reopen AR</strong> to reset placement</li>
             </ul>
-            <p class="ar-tips-note">The model will appear on a flat surface in front of you.</p>
+            <p class="ar-tips-note">The model will appear at a realistic size on a flat surface in front of you.</p>
             <button id="ar-tips-go" class="ar-tips-btn">Continue to AR</button>
         </div>
     </div>
