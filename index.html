@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>AR Brain Viewer</title>
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="description" content="Medivis AR Mobile Viewer — Explore 3D brain anatomy in augmented reality on your phone.">
+    <title>Medivis AR Mobile Viewer</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Model Viewer: Google's web component for 3D/AR -->
     <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
@@ -15,8 +22,20 @@
     <!-- Loading screen -->
     <div id="loading-screen">
         <div class="loader-content">
+            <div class="brand-mark">
+                <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="10" fill="url(#logo-grad)"/>
+                    <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="logo-grad" x1="0" y1="0" x2="40" y2="40">
+                            <stop stop-color="#6E5FF6"/>
+                            <stop offset="1" stop-color="#3B82F6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h2>Medivis AR</h2>
             <div class="spinner"></div>
-            <h2>Loading Brain Model&hellip;</h2>
             <p id="loading-status">Preparing 3D assets</p>
         </div>
     </div>
@@ -24,18 +43,82 @@
     <!-- Instruction overlay (shown after loading) -->
     <div id="instructions-overlay" class="hidden">
         <div class="instructions-card">
-            <h1>AR Brain Viewer</h1>
-            <p>Explore a 3D model of the human brain and skull in augmented reality.</p>
+            <div class="instructions-brand">
+                <svg class="instructions-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="10" fill="url(#logo-grad2)"/>
+                    <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="logo-grad2" x1="0" y1="0" x2="40" y2="40">
+                            <stop stop-color="#6E5FF6"/>
+                            <stop offset="1" stop-color="#3B82F6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="instructions-brand-text">Medivis</span>
+            </div>
+            <h1>AR Mobile Viewer</h1>
+            <p>Explore 3D brain anatomy in augmented reality, right from your phone.</p>
             <ol>
-                <li>Use your fingers to rotate, pinch to zoom, and drag to pan the 3D model below.</li>
-                <li>Tap the <strong>AR</strong> button to place the brain on a real surface using your camera.</li>
+                <li>Use your fingers to <strong>rotate</strong>, <strong>pinch to zoom</strong>, and <strong>drag to pan</strong> the 3D model.</li>
+                <li>Tap <strong>View in AR</strong> to place the brain on a real surface using your camera.</li>
             </ol>
-            <button id="dismiss-btn">Got it</button>
+            <button id="dismiss-btn">Get Started</button>
+            <a href="https://www.medivis.com" target="_blank" rel="noopener noreferrer" class="instructions-link">
+                Learn more at medivis.com
+            </a>
         </div>
     </div>
 
     <!-- Main 3D / AR viewer -->
     <div id="viewer-container">
+        <!-- Top bar with branding -->
+        <header id="top-bar">
+            <div class="top-bar-brand">
+                <svg class="top-bar-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="10" fill="url(#logo-grad3)"/>
+                    <path d="M12 28V14l8 7 8-7v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="logo-grad3" x1="0" y1="0" x2="40" y2="40">
+                            <stop stop-color="#6E5FF6"/>
+                            <stop offset="1" stop-color="#3B82F6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="top-bar-text">
+                    <span class="top-bar-name">Medivis</span>
+                    <span class="top-bar-label">AR Mobile Viewer</span>
+                </div>
+            </div>
+            <button id="info-toggle" aria-label="Toggle info panel">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M10 9v5M10 6.5v.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Info panel (dropdown) -->
+        <div id="info-content" class="hidden">
+            <h3>Brain Anatomy Model</h3>
+            <p>This model includes 5 structures:</p>
+            <ul class="structure-list">
+                <li><span class="dot dot-brain"></span> Brain</li>
+                <li><span class="dot dot-skull"></span> Skull Cap</li>
+                <li><span class="dot dot-face"></span> Face</li>
+                <li><span class="dot dot-tumor"></span> Tumor</li>
+                <li><span class="dot dot-ventricle"></span> Ventricles</li>
+            </ul>
+            <div id="model-controls">
+                <label>
+                    <input type="checkbox" id="toggle-rotate" checked>
+                    Auto-rotate
+                </label>
+            </div>
+            <a href="https://www.medivis.com" target="_blank" rel="noopener noreferrer" class="info-link">
+                Visit medivis.com
+            </a>
+        </div>
+
         <model-viewer
             id="brain-model"
             src="models/brain_scene.glb"
@@ -62,7 +145,7 @@
         >
             <!-- AR prompt -->
             <button slot="ar-button" id="ar-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
                     <path d="M2 12l10 5 10-5"/>
@@ -76,21 +159,12 @@
             </div>
         </model-viewer>
 
-        <!-- Model info panel -->
-        <div id="info-panel">
-            <button id="info-toggle" aria-label="Toggle info panel">&#9432;</button>
-            <div id="info-content" class="hidden">
-                <h3>Brain Anatomy</h3>
-                <p>This model includes 5 structures: brain (pink), skull cap (ivory),
-                   face (skin tone), tumor (red), and ventricles (blue).</p>
-                <div id="model-controls">
-                    <label>
-                        <input type="checkbox" id="toggle-rotate" checked>
-                        Auto-rotate
-                    </label>
-                </div>
-            </div>
-        </div>
+        <!-- Bottom bar with CTA -->
+        <footer id="bottom-bar">
+            <a href="https://www.medivis.com" target="_blank" rel="noopener noreferrer" class="powered-by">
+                Powered by <strong>Medivis</strong> &mdash; medivis.com
+            </a>
+        </footer>
     </div>
 
     <script src="app.js"></script>

@@ -1,4 +1,4 @@
-// === AR Brain Viewer — Main Application Logic ===
+// === Medivis AR Mobile Viewer — Main Application Logic ===
 
 (function () {
     'use strict';
@@ -32,10 +32,10 @@
             loadingScreen.classList.add('hidden');
 
             // Show instructions if first visit
-            if (!localStorage.getItem('ar-brain-instructions-seen')) {
+            if (!localStorage.getItem('medivis-ar-instructions-seen')) {
                 instructionsOverlay.classList.remove('hidden');
             }
-        }, 500);
+        }, 600);
     });
 
     // === Error Handling ===
@@ -47,12 +47,21 @@
     // === Dismiss Instructions ===
     dismissBtn.addEventListener('click', () => {
         instructionsOverlay.classList.add('hidden');
-        localStorage.setItem('ar-brain-instructions-seen', 'true');
+        localStorage.setItem('medivis-ar-instructions-seen', 'true');
     });
 
     // === Info Panel Toggle ===
     infoToggle.addEventListener('click', () => {
         infoContent.classList.toggle('hidden');
+    });
+
+    // Close info panel when tapping outside
+    document.addEventListener('click', (event) => {
+        if (!infoContent.classList.contains('hidden') &&
+            !infoContent.contains(event.target) &&
+            !infoToggle.contains(event.target)) {
+            infoContent.classList.add('hidden');
+        }
     });
 
     // === Auto-Rotate Toggle ===
@@ -82,7 +91,7 @@
             loadingScreen.classList.add('fade-out');
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
-            }, 500);
+            }, 600);
         }
     }, 15000);
 })();
