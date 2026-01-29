@@ -38,8 +38,8 @@
     <div id="viewer-container">
         <model-viewer
             id="brain-model"
-            src="models/brain.glb"
-            alt="3D model of the human brain"
+            src="models/brain_scene.glb"
+            alt="3D model of the human brain, skull, and ventricles"
             ar
             ar-modes="webxr scene-viewer quick-look"
             ar-scale="auto"
@@ -80,10 +80,9 @@
         <div id="info-panel">
             <button id="info-toggle" aria-label="Toggle info panel">&#9432;</button>
             <div id="info-content" class="hidden">
-                <h3>Human Brain</h3>
-                <p>The human brain weighs about 1.4 kg and contains roughly 86 billion neurons.
-                   This model shows the cerebral cortex surface with its characteristic folds
-                   (gyri and sulci).</p>
+                <h3>Brain Anatomy</h3>
+                <p>This model includes 5 structures: brain (pink), skull cap (ivory),
+                   face (skin tone), tumor (red), and ventricles (blue).</p>
                 <div id="model-controls">
                     <label>
                         <input type="checkbox" id="toggle-rotate" checked>
