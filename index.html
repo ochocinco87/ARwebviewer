@@ -5,30 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a14">
-    <meta name="description" content="Medivis AR Mobile Viewer — Explore 3D brain anatomy in augmented reality on your phone.">
+    <meta name="description" content="Medivis AR Mobile Viewer — Explore 3D brain anatomy in augmented reality.">
     <title>Medivis AR Mobile Viewer</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
 
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+    <!-- model-viewer: WebXR (ARCore) on Android, AR Quick Look (ARKit) on iOS -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Camera feed (hidden until AR mode) -->
-    <video id="camera-feed" autoplay playsinline muted></video>
-
-    <!-- Three.js canvas -->
-    <canvas id="ar-canvas"></canvas>
-
     <!-- Loading screen -->
     <div id="loading-screen">
         <div class="loader-content">
@@ -86,7 +75,7 @@
         </a>
     </div>
 
-    <!-- Part label -->
+    <!-- Part label (when tapping a part) -->
     <div id="part-label" class="hidden">
         <span id="part-label-text"></span>
     </div>
@@ -96,31 +85,49 @@
         <span id="toast-text"></span>
     </div>
 
-    <!-- Enter AR button (preview mode) -->
+    <!-- 3D Viewer -->
+    <div id="viewer-container">
+        <model-viewer
+            id="brain-model"
+            src="models/brain_scene.glb"
+            alt="3D brain anatomy model"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="fixed"
+            ar-placement="floor"
+            camera-controls
+            touch-action="pan-y"
+            auto-rotate
+            auto-rotate-delay="0"
+            rotation-per-second="15deg"
+            interaction-prompt="none"
+            shadow-intensity="1"
+            shadow-softness="0.5"
+            exposure="1.2"
+            environment-image="neutral"
+            camera-orbit="20deg 70deg 105%"
+            min-camera-orbit="auto auto 50%"
+            max-camera-orbit="auto auto 300%"
+            field-of-view="45deg"
+            loading="eager"
+        >
+            <!-- Custom AR button (hidden — we trigger AR via our own button) -->
+            <button slot="ar-button" id="mv-ar-button" style="display:none;"></button>
+
+            <!-- Progress bar -->
+            <div slot="progress-bar" id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </model-viewer>
+    </div>
+
+    <!-- Enter AR button -->
     <button id="enter-ar-btn" class="hidden">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
             <circle cx="12" cy="13" r="4"/>
         </svg>
-        <span>Enter AR Camera</span>
-    </button>
-
-    <!-- Place / Pick Up button (AR mode) -->
-    <button id="place-btn" class="hidden">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-        </svg>
-        <span id="place-btn-text">Place Model</span>
-    </button>
-
-    <!-- Exit AR button (AR mode) -->
-    <button id="exit-ar-btn" class="hidden">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-        <span>Exit AR</span>
+        <span>View in AR</span>
     </button>
 
     <!-- Bottom bar -->
@@ -130,6 +137,6 @@
         </a>
     </footer>
 
-    <script type="module" src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

@@ -10,22 +10,14 @@ html, body {
 }
 .hidden { display: none !important; }
 
-/* === Camera feed === */
-#camera-feed {
-    position: fixed; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    display: none;
+/* === Viewer === */
+#viewer-container {
+    width: 100%; height: 100%; position: relative;
 }
-#camera-feed.active { display: block; }
-
-/* === Three.js canvas === */
-#ar-canvas {
-    position: fixed; inset: 0;
+model-viewer {
     width: 100%; height: 100%;
-    z-index: 1;
-    touch-action: none;
+    background: radial-gradient(ellipse at 50% 40%, #141428 0%, #0a0a14 100%);
+    --poster-color: transparent;
 }
 
 /* === Loading === */
@@ -55,6 +47,17 @@ html, body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loader-content p { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.02em; }
+
+/* === Progress bar === */
+#progress-bar {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+    background: rgba(255,255,255,0.05);
+}
+#progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #6E5FF6, #3B82F6);
+    transition: width 0.3s ease;
+}
 
 /* === Top bar === */
 #top-bar {
@@ -125,9 +128,14 @@ html, body {
     background: rgba(110,95,246,0.9);
     border-radius: 10px; padding: 8px 18px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    animation: toast-in 0.3s ease-out;
+    animation: label-in 0.25s ease-out;
 }
 #part-label span { font-size: 0.85rem; font-weight: 600; color: #fff; }
+
+@keyframes label-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 
 /* === Toast === */
 #toast {
@@ -153,49 +161,20 @@ html, body {
     to   { opacity: 0; transform: translateX(-50%) translateY(8px); }
 }
 
-/* === Buttons (shared base) === */
-#enter-ar-btn, #place-btn, #exit-ar-btn {
-    position: fixed; z-index: 20;
+/* === Enter AR button === */
+#enter-ar-btn {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    z-index: 20;
     display: flex; align-items: center; gap: 8px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600; cursor: pointer;
-    border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
+    color: #fff; padding: 14px 28px; font-size: 0.95rem;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    border: none; border-radius: 14px; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(110,95,246,0.35), 0 0 40px rgba(59,130,246,0.1);
     transition: transform 0.15s, opacity 0.15s;
 }
-#enter-ar-btn:active, #place-btn:active, #exit-ar-btn:active {
-    transform: translateX(-50%) scale(0.96);
-}
-
-/* Enter AR */
-#enter-ar-btn {
-    bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
-    color: #fff; padding: 14px 28px; font-size: 0.95rem;
-    box-shadow: 0 4px 20px rgba(110,95,246,0.35), 0 0 40px rgba(59,130,246,0.1);
-}
-
-/* Place / Pick Up */
-#place-btn {
-    bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
-    color: #fff; padding: 14px 28px; font-size: 0.95rem;
-    box-shadow: 0 4px 20px rgba(110,95,246,0.35);
-}
-#place-btn.placed {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    box-shadow: 0 4px 20px rgba(34,197,94,0.35);
-}
-
-/* Exit AR */
-#exit-ar-btn {
-    top: 14px; right: 60px; transform: none;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    color: #fff; padding: 8px 14px; font-size: 0.78rem;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-}
-#exit-ar-btn:active { transform: scale(0.96); }
+#enter-ar-btn:active { transform: translateX(-50%) scale(0.96); }
+#enter-ar-btn svg { width: 20px; height: 20px; }
 
 /* === Bottom bar === */
 #bottom-bar {
@@ -214,7 +193,7 @@ html, body {
 
 /* === Mobile === */
 @media (max-width: 480px) {
-    #enter-ar-btn, #place-btn { bottom: 72px; padding: 12px 24px; font-size: 0.9rem; }
+    #enter-ar-btn { bottom: 72px; padding: 12px 24px; font-size: 0.9rem; }
     #info-content { width: 200px; right: 12px; }
     #top-bar { padding: 10px 12px; }
 }
@@ -222,8 +201,7 @@ html, body {
 /* === Safe areas === */
 @supports (padding-top: env(safe-area-inset-top)) {
     #top-bar { padding-top: calc(12px + env(safe-area-inset-top)); }
-    #exit-ar-btn { top: calc(14px + env(safe-area-inset-top)); }
     #info-content { top: calc(56px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); }
-    #enter-ar-btn, #place-btn { bottom: calc(80px + env(safe-area-inset-bottom)); }
+    #enter-ar-btn { bottom: calc(80px + env(safe-area-inset-bottom)); }
     #bottom-bar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
