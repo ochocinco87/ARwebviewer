@@ -73,14 +73,52 @@
         }
     });
 
-    // === AR Session Events ===
+    // === AR Session Events & Placement Toast ===
+    const arToast = document.getElementById('ar-toast');
+    const arToastText = document.getElementById('ar-toast-text');
+    let arToastTimeout = null;
+    let modelPlaced = false;
+
+    function showArToast(message, duration) {
+        arToastText.textContent = message;
+        arToast.classList.remove('hidden', 'fade-out');
+        clearTimeout(arToastTimeout);
+        if (duration) {
+            arToastTimeout = setTimeout(() => {
+                arToast.classList.add('fade-out');
+                setTimeout(() => arToast.classList.add('hidden'), 300);
+            }, duration);
+        }
+    }
+
+    function hideArToast() {
+        clearTimeout(arToastTimeout);
+        arToast.classList.add('fade-out');
+        setTimeout(() => arToast.classList.add('hidden'), 300);
+    }
+
     modelViewer.addEventListener('ar-status', (event) => {
-        if (event.detail.status === 'session-started') {
+        const status = event.detail.status;
+
+        if (status === 'session-started') {
             console.log('AR session started');
-        } else if (event.detail.status === 'not-presenting') {
+            modelPlaced = false;
+            showArToast('Point at a flat surface, then tap to place');
+        } else if (status === 'object-placed') {
+            console.log('Model placed on surface');
+            if (!modelPlaced) {
+                modelPlaced = true;
+                showArToast('Tap another spot to move. Pinch to resize.', 5000);
+            } else {
+                showArToast('Moved! Pinch to resize, twist to rotate.', 3000);
+            }
+        } else if (status === 'not-presenting') {
             console.log('AR session ended');
-        } else if (event.detail.status === 'failed') {
+            modelPlaced = false;
+            hideArToast();
+        } else if (status === 'failed') {
             console.warn('AR not supported or failed on this device');
+            hideArToast();
             alert('AR is not available on this device or browser. You can still interact with the 3D model on screen.');
         }
     });

@@ -59,8 +59,10 @@
             <h1>AR Mobile Viewer</h1>
             <p>Explore 3D brain anatomy in augmented reality, right from your phone.</p>
             <ol>
-                <li>Use your fingers to <strong>rotate</strong>, <strong>pinch to zoom</strong>, and <strong>drag to pan</strong> the 3D model.</li>
-                <li>Tap <strong>View in AR</strong> to place the brain on a real surface using your camera.</li>
+                <li><strong>Rotate</strong>, <strong>pinch to zoom</strong>, and <strong>drag to pan</strong> the 3D model below.</li>
+                <li>Tap <strong>Place on Surface</strong> to enter AR. Point your camera at a flat surface like a table or floor.</li>
+                <li><strong>Tap</strong> to place the brain. <strong>Tap elsewhere</strong> to pick it up and move it to a new surface.</li>
+                <li><strong>Pinch</strong> to resize and <strong>two-finger twist</strong> to rotate in AR.</li>
             </ol>
             <button id="dismiss-btn">Get Started</button>
             <a href="https://www.medivis.com" target="_blank" rel="noopener noreferrer" class="instructions-link">
@@ -126,6 +128,8 @@
             ar
             ar-modes="webxr scene-viewer quick-look"
             ar-scale="auto"
+            ar-placement="floor"
+            xr-environment
             camera-controls
             touch-action="pan-y"
             auto-rotate
@@ -143,14 +147,14 @@
             poster="assets/poster.svg"
             loading="eager"
         >
-            <!-- AR prompt -->
+            <!-- AR button -->
             <button slot="ar-button" id="ar-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
                     <path d="M2 12l10 5 10-5"/>
                 </svg>
-                View in AR
+                Place on Surface
             </button>
 
             <!-- Progress bar -->
@@ -158,6 +162,16 @@
                 <div id="progress-fill"></div>
             </div>
         </model-viewer>
+
+        <!-- AR placement instructions toast (shown during AR session) -->
+        <div id="ar-toast" class="hidden">
+            <div class="ar-toast-content">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+                <span id="ar-toast-text">Point at a flat surface, then tap to place</span>
+            </div>
+        </div>
 
         <!-- Bottom bar with CTA -->
         <footer id="bottom-bar">
