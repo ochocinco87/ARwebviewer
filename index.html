@@ -93,8 +93,9 @@
             alt="3D brain anatomy model"
             ar
             ar-modes="webxr scene-viewer quick-look"
-            ar-scale="fixed"
+            ar-scale="auto"
             ar-placement="floor"
+            xr-environment
             camera-controls
             touch-action="pan-y"
             auto-rotate
@@ -114,6 +115,28 @@
             <!-- Custom AR button (hidden — we trigger AR via our own button) -->
             <button slot="ar-button" id="mv-ar-button" style="display:none;"></button>
 
+            <!-- WebXR AR overlay (visible during AR on Android) -->
+            <div slot="ar-overlay" id="ar-overlay">
+                <div id="ar-status-bar">
+                    <span id="ar-status-text">Point at a flat surface, then tap to place</span>
+                </div>
+                <div id="ar-controls">
+                    <button id="ar-pickup-btn" class="ar-ctrl-btn hidden">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 9l7-7 7 7"/><path d="M12 2v14"/>
+                        </svg>
+                        Pick Up &amp; Move
+                    </button>
+                    <button id="ar-reset-btn" class="ar-ctrl-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"/>
+                            <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+                        </svg>
+                        Reset Position
+                    </button>
+                </div>
+            </div>
+
             <!-- Progress bar -->
             <div slot="progress-bar" id="progress-bar">
                 <div id="progress-fill"></div>
@@ -129,6 +152,22 @@
         </svg>
         <span>View in AR</span>
     </button>
+
+    <!-- iOS AR gesture tips -->
+    <div id="ar-tips-modal" class="hidden">
+        <div class="ar-tips-backdrop"></div>
+        <div class="ar-tips-card">
+            <button id="ar-tips-close" class="ar-tips-close">&times;</button>
+            <h3>AR Controls</h3>
+            <ul class="ar-tips-list">
+                <li><strong>Drag</strong> to move the model</li>
+                <li><strong>Pinch</strong> to resize</li>
+                <li><strong>Two-finger rotate</strong> to turn</li>
+            </ul>
+            <p class="ar-tips-note">The model will appear on a flat surface in front of you.</p>
+            <button id="ar-tips-go" class="ar-tips-btn">Continue to AR</button>
+        </div>
+    </div>
 
     <!-- Bottom bar -->
     <footer id="bottom-bar" class="hidden">

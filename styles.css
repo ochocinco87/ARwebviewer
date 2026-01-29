@@ -205,3 +205,104 @@ model-viewer {
     #enter-ar-btn { bottom: calc(80px + env(safe-area-inset-bottom)); }
     #bottom-bar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
+
+/* === AR overlay (WebXR DOM overlay on Android) === */
+#ar-overlay {
+    position: fixed; inset: 0; z-index: 30;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 20px 16px;
+    pointer-events: none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+#ar-overlay > * { pointer-events: auto; }
+
+#ar-status-bar {
+    align-self: center;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px; padding: 10px 20px;
+    max-width: 90vw; text-align: center;
+}
+#ar-status-text {
+    font-size: 0.82rem; font-weight: 500; color: #fff;
+}
+
+#ar-controls {
+    display: flex; justify-content: center; gap: 12px;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.ar-ctrl-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 12px 20px;
+    color: #fff; font-size: 0.85rem; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+.ar-ctrl-btn:active {
+    background: rgba(110,95,246,0.5);
+    transform: scale(0.96);
+}
+.ar-ctrl-btn svg { flex-shrink: 0; }
+
+/* === iOS AR tips modal === */
+#ar-tips-modal {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+}
+.ar-tips-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.ar-tips-card {
+    position: relative; z-index: 1;
+    background: rgba(18,18,35,0.97);
+    border: 1px solid rgba(110,95,246,0.2);
+    border-radius: 18px; padding: 28px 24px;
+    width: 280px; max-width: 90vw;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+.ar-tips-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none; color: #666;
+    font-size: 1.4rem; cursor: pointer; line-height: 1;
+}
+.ar-tips-close:active { color: #fff; }
+
+.ar-tips-card h3 {
+    font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 16px;
+    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.ar-tips-list {
+    list-style: none; padding: 0; margin: 0 0 14px;
+}
+.ar-tips-list li {
+    font-size: 0.85rem; color: #bbb; margin-bottom: 8px; padding-left: 6px;
+}
+.ar-tips-list li::before {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #6E5FF6; margin-right: 10px;
+    vertical-align: middle;
+}
+.ar-tips-list strong { color: #fff; font-weight: 600; }
+
+.ar-tips-note {
+    font-size: 0.78rem; color: #777; margin-bottom: 18px; line-height: 1.4;
+}
+.ar-tips-btn {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, #6E5FF6, #3B82F6);
+    color: #fff; padding: 13px 24px; font-size: 0.95rem;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    border: none; border-radius: 12px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(110,95,246,0.3);
+    transition: transform 0.1s;
+}
+.ar-tips-btn:active { transform: scale(0.97); }

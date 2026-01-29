@@ -21,6 +21,18 @@
     const toastText    = document.getElementById('toast-text');
     const progressFill = document.getElementById('progress-fill');
 
+    // AR overlay elements
+    const arStatusText = document.getElementById('ar-status-text');
+    const arPickupBtn  = document.getElementById('ar-pickup-btn');
+    const arResetBtn   = document.getElementById('ar-reset-btn');
+    const arTipsModal  = document.getElementById('ar-tips-modal');
+    const arTipsGo     = document.getElementById('ar-tips-go');
+    const arTipsClose  = document.getElementById('ar-tips-close');
+
+    // ─── Platform ───
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     // ─── Part names ───
     const PART_NAMES = {
         brain:      'Brain',
@@ -30,9 +42,11 @@
         ventricle:  'Ventricles',
     };
 
-    // ─── Highlight state ───
+    // ─── State ───
     let highlightedMaterial = null;
     let originalEmissive = null;
+    let arPlaced = false;
+    let arActive = false;
 
     // ════════════════════════════════════════
     // Loading
@@ -64,36 +78,89 @@
 
     // ════════════════════════════════════════
     // AR — trigger model-viewer's native AR
-    // Uses WebXR (ARCore) on Android Chrome
-    // Uses AR Quick Look (ARKit) on iOS Safari
-    // Falls back to Scene Viewer on older Android
+    // WebXR (ARCore) on Android Chrome
+    // AR Quick Look (ARKit) on iOS Safari
+    // Scene Viewer fallback on older Android
     // ════════════════════════════════════════
     enterArBtn.addEventListener('click', () => {
-        // model-viewer's activateAR() triggers the native AR pipeline
         if (mv.canActivateAR) {
-            mv.activateAR();
+            if (isIOS) {
+                // Show gesture tips modal before launching Quick Look
+                arTipsModal.classList.remove('hidden');
+            } else {
+                mv.activateAR();
+            }
         } else {
             showToast('AR not supported on this device. Try on a phone.', 4000);
         }
     });
 
+    // ─── iOS tips modal ───
+    arTipsGo.addEventListener('click', () => {
+        arTipsModal.classList.add('hidden');
+        mv.activateAR();
+    });
+
+    arTipsClose.addEventListener('click', () => {
+        arTipsModal.classList.add('hidden');
+    });
+
+    arTipsModal.addEventListener('click', (e) => {
+        if (e.target === arTipsModal || e.target.classList.contains('ar-tips-backdrop')) {
+            arTipsModal.classList.add('hidden');
+        }
+    });
+
+    // ─── AR status tracking ───
     mv.addEventListener('ar-status', (e) => {
         const s = e.detail.status;
         if (s === 'session-started') {
-            console.log('AR session started (WebXR/ARCore or Scene Viewer)');
+            arActive = true;
+            arPlaced = false;
+            if (arPickupBtn) arPickupBtn.classList.add('hidden');
+            if (arStatusText) arStatusText.textContent = 'Point at a flat surface, then tap to place';
         } else if (s === 'object-placed') {
-            console.log('Model placed on surface');
+            arPlaced = true;
+            if (arPickupBtn) arPickupBtn.classList.remove('hidden');
+            if (arStatusText) arStatusText.textContent = 'Model placed! Use buttons below to reposition.';
         } else if (s === 'not-presenting') {
-            console.log('AR session ended');
+            arActive = false;
+            arPlaced = false;
         } else if (s === 'failed') {
-            console.warn('AR failed');
+            arActive = false;
             showToast('AR failed to start. Ensure camera permissions are granted.', 4000);
         }
     });
 
-    // Also handle Quick Look (iOS) events
     mv.addEventListener('quick-look-button-tapped', () => {
         console.log('iOS AR Quick Look opened');
+    });
+
+    // ════════════════════════════════════════
+    // AR overlay controls (WebXR DOM overlay)
+    // ════════════════════════════════════════
+    function reenterAR() {
+        // Exit the current AR session via model-viewer's hidden AR button,
+        // then re-enter. This resets the placement so the model follows
+        // the hit-test reticle again (~2-3 ft in front of the user).
+        mvArBtn.click();
+        const onExit = (ev) => {
+            if (ev.detail.status === 'not-presenting') {
+                mv.removeEventListener('ar-status', onExit);
+                setTimeout(() => mv.activateAR(), 400);
+            }
+        };
+        mv.addEventListener('ar-status', onExit);
+    }
+
+    arResetBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        reenterAR();
+    });
+
+    arPickupBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        reenterAR();
     });
 
     // ════════════════════════════════════════
@@ -133,8 +200,6 @@
                         -(y / rect.height) * 2 + 1
                     );
 
-                    // Get camera from model-viewer's shadow DOM
-                    const mvCanvas = mv.shadowRoot.querySelector('canvas');
                     const camera = findCamera(scene);
                     if (camera) {
                         raycaster.setFromCamera(mouse, camera);
@@ -163,7 +228,6 @@
             if (val && val.scene) return val.scene;
             if (val && val.isScene) return val;
         }
-        // Try another approach
         const keys = Object.keys(modelViewer);
         for (const k of keys) {
             if (modelViewer[k] && modelViewer[k].scene) return modelViewer[k].scene;
@@ -172,7 +236,6 @@
     }
 
     function getThreeFromMV(modelViewer) {
-        // Try to get the THREE namespace from the module scope
         try {
             const canvas = modelViewer.shadowRoot.querySelector('canvas');
             if (canvas && canvas.__three_renderer__) {
@@ -180,10 +243,8 @@
             }
         } catch (e) {}
 
-        // model-viewer bundles Three.js internally; try to access via scene
         const scene = getInternalScene(modelViewer);
         if (scene && scene.constructor) {
-            // Return a minimal THREE-like object from the scene's constructor module
             const proto = Object.getPrototypeOf(scene);
             if (proto.constructor.name === 'Scene') {
                 return {
@@ -246,7 +307,6 @@
         if (!model || !model.materials || model.materials.length === 0) return;
         unhighlight();
 
-        // Just highlight first material as a demo
         const mat = model.materials[0];
         originalEmissive = mat.emissiveFactor.slice();
         highlightedMaterial = mat;
