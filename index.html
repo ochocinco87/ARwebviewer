@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>AR Brain Viewer</title>
+
+    <!-- Model Viewer: Google's web component for 3D/AR -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading screen -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h2>Loading Brain Model&hellip;</h2>
+            <p id="loading-status">Preparing 3D assets</p>
+        </div>
+    </div>
+
+    <!-- Instruction overlay (shown after loading) -->
+    <div id="instructions-overlay" class="hidden">
+        <div class="instructions-card">
+            <h1>AR Brain Viewer</h1>
+            <p>Explore a 3D model of the human brain and skull in augmented reality.</p>
+            <ol>
+                <li>Use your fingers to rotate, pinch to zoom, and drag to pan the 3D model below.</li>
+                <li>Tap the <strong>AR</strong> button to place the brain on a real surface using your camera.</li>
+            </ol>
+            <button id="dismiss-btn">Got it</button>
+        </div>
+    </div>
+
+    <!-- Main 3D / AR viewer -->
+    <div id="viewer-container">
+        <model-viewer
+            id="brain-model"
+            src="models/brain.glb"
+            ios-src="models/brain.usdz"
+            alt="3D model of the human brain and skull"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="auto"
+            camera-controls
+            touch-action="pan-y"
+            auto-rotate
+            auto-rotate-delay="1000"
+            rotation-per-second="20deg"
+            interaction-prompt="auto"
+            shadow-intensity="1"
+            shadow-softness="0.5"
+            exposure="1"
+            environment-image="neutral"
+            camera-orbit="0deg 75deg 2.5m"
+            min-camera-orbit="auto auto 0.5m"
+            max-camera-orbit="auto auto 10m"
+            field-of-view="30deg"
+            poster="assets/poster.svg"
+            loading="eager"
+        >
+            <!-- AR prompt -->
+            <button slot="ar-button" id="ar-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                View in AR
+            </button>
+
+            <!-- Progress bar -->
+            <div slot="progress-bar" id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </model-viewer>
+
+        <!-- Model info panel -->
+        <div id="info-panel">
+            <button id="info-toggle" aria-label="Toggle info panel">&#9432;</button>
+            <div id="info-content" class="hidden">
+                <h3>Human Brain</h3>
+                <p>The human brain weighs about 1.4 kg and contains roughly 86 billion neurons.
+                   This model shows the cerebral cortex surface with its characteristic folds
+                   (gyri and sulci).</p>
+                <div id="model-controls">
+                    <label>
+                        <input type="checkbox" id="toggle-rotate" checked>
+                        Auto-rotate
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#1a1a2e"/>
+  <text x="200" y="190" text-anchor="middle" fill="#6c63ff" font-family="sans-serif" font-size="24">AR Brain Viewer</text>
+  <text x="200" y="220" text-anchor="middle" fill="#888" font-family="sans-serif" font-size="14">Loading 3D model...</text>
+</svg>
