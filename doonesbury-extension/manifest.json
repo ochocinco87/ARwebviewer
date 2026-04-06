@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Doonesbury Daily",
+  "version": "1.0",
+  "description": "Shows a random Doonesbury comic every time you open a new tab.",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": [],
+  "icons": {
+    "128": "icon128.png"
+  }
+}
